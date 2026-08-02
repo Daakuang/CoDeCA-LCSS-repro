@@ -1,0 +1,11 @@
+__pycache__/
+.pytest_cache/
+.venv/
+*.egg-info/
+*.py[cod]
+*.log
+gurobi.env
+
+# Keep the archived publication data; ignore newly reproduced solver outputs.
+results/lcss_v2/reproduced_joint/
+results/lcss_v2/reproduced_sensitivity/
