@@ -1,5 +1,7 @@
 # CoDeCA L-CSS reproduction code
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21757462.svg)](https://doi.org/10.5281/zenodo.21757462)
+
 This repository contains the code and numerical data for the manuscript
 "Deployment-Aware Controller and Control Architecture Co-Design via
 Mixed-Integer Output-Feedback SLS."

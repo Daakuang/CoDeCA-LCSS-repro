@@ -8,6 +8,9 @@ license: MIT
 authors:
   - family-names: Zhou
     given-names: Chenchen
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.21757462"
 repository-code: "https://github.com/Daakuang/CoDeCA-LCSS-repro"
 url: "https://github.com/Daakuang/CoDeCA-LCSS-repro"
 keywords:

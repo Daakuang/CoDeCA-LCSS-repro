@@ -12,9 +12,9 @@
       "sha256": "44240047fc4d28aaf6a67b27780a7464206f8f54d3bc85cf184f4a96a9446204"
     },
     {
-      "bytes": 536,
+      "bytes": 600,
       "path": "CITATION.cff",
-      "sha256": "91a2ef11906882c177bd4aca0af7e8a4fd94be638790e43cdfe89a6633d028b2"
+      "sha256": "5676d0a69490cd9fb76ca7842b1cbd0b260d9492938abb9c9949ac198143ac35"
     },
     {
       "bytes": 1070,
@@ -27,9 +27,9 @@
       "sha256": "c626c8362473d441ee71c73ccd5419e1155680adb2cd957defdf2d980af4d515"
     },
     {
-      "bytes": 3998,
+      "bytes": 4107,
       "path": "README.md",
-      "sha256": "9d41f3a78ef9d3e9f30769a1e9a50160aef3a68ad4923dcd534f40d3d9700ad4"
+      "sha256": "050832be3161bd049a5e9b9b783e588ff52beb1997315a75dc49b7b27a816aa2"
     },
     {
       "bytes": 58,
