@@ -4,7 +4,7 @@
 Chenchen Zhou and Jose Matias  
 *IEEE Control Systems Letters*, vol. 10, pp. 2431–2436, 2026.
 
-[**Published paper · L-CSS**](https://doi.org/10.1109/LCSYS.2026.3731917) · [**arXiv**](https://arxiv.org/abs/2606.14966) · [Original software archive](https://doi.org/10.5281/zenodo.21757462)
+[**Published paper · L-CSS**](https://doi.org/10.1109/LCSYS.2026.3731917) · [**arXiv**](https://arxiv.org/abs/2606.14966)
 
 A small, self-contained implementation of the paper's three-follower platoon
 example. The design selects actuators, sensor packages and directed communication
