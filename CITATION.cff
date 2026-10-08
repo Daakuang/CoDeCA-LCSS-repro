@@ -1,20 +1,29 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite the archived release and the associated article."
-title: "CoDeCA L-CSS reproduction code"
+message: "Please cite the published paper below. The original v1.0.0 data archive is https://doi.org/10.5281/zenodo.21757462."
+title: "CoDeCA L-CSS paper reproduction"
 type: software
-version: 1.0.0
-date-released: 2026-08-02
 license: MIT
 authors:
   - family-names: Zhou
     given-names: Chenchen
-identifiers:
-  - type: doi
-    value: "10.5281/zenodo.21757462"
 repository-code: "https://github.com/Daakuang/CoDeCA-LCSS-repro"
 url: "https://github.com/Daakuang/CoDeCA-LCSS-repro"
+preferred-citation:
+  type: article
+  title: "Deployment-Aware Controller and Control Architecture Co-Design via Mixed-Integer Output-Feedback SLS"
+  authors:
+    - family-names: Zhou
+      given-names: Chenchen
+    - family-names: Matias
+      given-names: Jose
+  journal: "IEEE Control Systems Letters"
+  year: 2026
+  volume: "10"
+  start: "2431"
+  end: "2436"
+  doi: "10.1109/LCSYS.2026.3731917"
+  url: "https://ieeexplore.ieee.org/document/11683489"
 keywords:
   - system-level synthesis
   - control architecture co-design
   - mixed-integer convex programming
-  - quadratic invariance

@@ -1,115 +1,109 @@
-# CoDeCA L-CSS reproduction code
+# CoDeCA: L-CSS paper reproduction
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21757462.svg)](https://doi.org/10.5281/zenodo.21757462)
+**Deployment-Aware Controller and Control Architecture Co-Design via Mixed-Integer Output-Feedback SLS**  
+Chenchen Zhou and Jose Matias  
+*IEEE Control Systems Letters*, vol. 10, pp. 2431–2436, 2026.
 
-This repository contains the code and numerical data for the manuscript
-"Deployment-Aware Controller and Control Architecture Co-Design via
-Mixed-Integer Output-Feedback SLS."
+[**Published paper · L-CSS**](https://doi.org/10.1109/LCSYS.2026.3731917) · [**arXiv**](https://arxiv.org/abs/2606.14966) · [Original software archive](https://doi.org/10.5281/zenodo.21757462)
 
-The release covers the finite three-follower platoon study in the paper:
+A small, self-contained implementation of the paper's three-follower platoon
+example. The design selects actuators, sensor packages and directed communication
+services together with an output-feedback controller under a deployment budget.
 
-- joint actuator, sensor-package, and communication-service selection;
-- hard-budget mixed-integer OF-SLS synthesis;
-- PBH and quadratically invariant comparison families;
-- canonical platoon information-flow baselines;
-- regularization-for-design (RFD) paths and fixed-architecture re-synthesis;
-- FIR-horizon, fixed-hardware, and service-menu sensitivity data; and
-- generation of the reported comparison figure with Matplotlib.
+<img src="data/figure1.png" alt="Performance loss versus realized deployment cost" width="560">
 
-The repository contains only the paper-specific finite formulation and its
-standard solver path. Experimental acceleration algorithms under separate
-development are not part of this release.
+## Reproduce the figure
 
-## Archived numerical evidence
+Use Python 3.12. Open a terminal in this folder and run:
 
-The locked result files are under `results/lcss_v2/joint_platoon/`. The main
-files are:
-
-- `publication.json`: sanitized machine-readable publication result;
-- `platoon_budget_comparison_joint_source_data.json`: plotted source data;
-- `platoon_budget_comparison_joint.pdf` and `.png`: final figure;
-- `rfd_native_scan.json`: the 16-by-11 native RFD path; and
-- `baseline_envelopes.json` and `qi_envelope.json`: comparison envelopes; and
-- `case_sensitivity.json`: fixed-hardware and delay-three sensitivity results.
-
-`PUBLIC_RELEASE_MANIFEST.json` records the SHA-256 hash and byte count of every
-file in the release.
-
-## Environment
-
-The locked run used Python 3.13.3 on Windows 11 with NumPy 2.2.6, SciPy 1.15.3,
-Matplotlib 3.10.3, pytest 9.0.2, CVXPY 1.7.x, and Gurobi/gurobipy 13.0.1.
-The optimization runs require a working Gurobi license.
-
-Create an isolated environment and install the package:
-
-```powershell
-python -m venv .venv
-.venv\Scripts\python.exe -m pip install -e ".[test]"
+```sh
+python -m pip install matplotlib==3.10.3
+python reproduce.py
 ```
 
-`requirements-lock.txt` records the exact package versions used for the locked
-run.
+This redraws Figure 1 from the published numerical records. It writes
+`figure1.png`, `figure1.pdf`, `budget_summary.csv` and `sensitivity.csv` to
+`results/`. It takes no optimization step and needs no Gurobi license.
 
-## Validate the public package
+## Recompute the experiments
 
-```powershell
-.venv\Scripts\python.exe -m pytest -q
+Install the numerical dependencies and configure a Gurobi license:
+
+```sh
+python -m pip install -r requirements.txt
+python reproduce.py solve
 ```
 
-The tests check the plant, deployment menus, OF-SLS timing, hardware and
-service gates, PBH/QI enumeration, fixed-architecture re-synthesis, and figure
-schema. Tests that invoke Gurobi require the licensed environment.
+The full run computes the 22 co-design budgets, all 2,736 PBH-admissible QI
+deployments, six canonical patterns and their QI repairs, the native RFD path,
+and the sensitivity cases. The QI budget frontier is extracted from the
+exhaustive fixed-deployment results. This is the expensive step.
 
-## Recreate the figure from archived data
+Each completed QP is saved to `results/computed.json`; repeating the command
+resumes that file. An interrupted RFD regularization path restarts its 16 SOCPs.
+A different output folder starts an independent run:
 
-```powershell
-.venv\Scripts\python.exe -m repro.joint_plotting `
-  --publication-source results/lcss_v2/joint_platoon/publication.json `
-  --output-directory results/lcss_v2/reproduced_joint
+```sh
+python reproduce.py solve --section codesign --output results/my_run
+python reproduce.py solve --section qi --output results/my_run
+python reproduce.py solve --section canonical --output results/my_run
+python reproduce.py solve --section rfd --output results/my_run
+python reproduce.py solve --section sensitivity --output results/my_run
+python reproduce.py figure --source results/my_run/computed.json --output results/my_run
 ```
 
-## Recompute the main optimization
+## Read the implementation
 
-The full run uses seed 23, one Gurobi thread, and FIR horizon 10:
+There are six Python files, with no package installation or test framework.
 
-```powershell
-.venv\Scripts\python.exe -m repro.joint_publication `
-  --repository-root . `
-  --no-resume `
-  --no-plot `
-  --output results/lcss_v2/reproduced_joint/publication.json `
-  --seed 23 `
-  --threads 1 `
-  --horizon 10
+| File | Purpose |
+| --- | --- |
+| [reproduce.py](reproduce.py) | Command-line entry point |
+| [platoon.py](platoon.py) | Plant matrices, deployment costs, timing, PBH and QI conditions |
+| [synthesis.py](synthesis.py) | OF-SLS mixed-integer QP, fixed-deployment QP and residual checks |
+| [experiments.py](experiments.py) | Paper experiment grids and resumable results |
+| [rfd.py](rfd.py) | Native hardware/service regularization, thresholding and QI completion |
+| [plot_results.py](plot_results.py) | Figure and numerical summaries |
+
+Start with `plant()` and `sls_residuals()` in `platoon.py`, then `build_model()`
+in `synthesis.py`. The four response blocks are `R`, `M`, `N`, `L`.
+Communication matrices use **[destination, source]**; `None` in JSON means no
+service. The physical timing is explicit in `service_entries()`.
+
+The main case has 9 states, 3 actuators, 7 sensor packages and a horizon of 10.
+Hardware costs one unit per device. Remote service delays of 1 and 2 steps cost
+3 and 2 units; the sensitivity case adds a 3-step service costing one unit.
+Budgets range from 14 to 35. The random seed is 23 and Gurobi uses one thread.
+
+The implementation retains the numerical checks needed to interpret a result:
+OF-SLS and deployment residuals, independent fixed-QP synthesis of each integer
+solution, and upper/lower-bound agreement. An unresolved solver status is saved
+as such. A partial QI catalogue is not plotted as the exhaustive comparison.
+
+## Reference results and citation
+
+[data/reference.json](data/reference.json) contains the paper-relevant original
+results, including residual summaries and the 176-point RFD path. At budget 24,
+the co-design performance loss relative to the dense reference is
+`1.92256e-5`, versus `7.41246e-5` for QI. The dense reference is
+`J = 4.987426757285976`; the figure normalizes realized cost by 35.
+
+This shorter implementation was checked against the original plant, constraint
+and objective matrices, QI catalogue, RFD formulation, and saved figure data.
+The complete optimization campaign has **not** been rerun for this refactor.
+The original full records and implementation remain available in
+[the preserved source revision](https://github.com/Daakuang/CoDeCA-LCSS-repro/tree/8bf329026e158fb281511ab3109135d429e141f0)
+and the [v1.0.0 archive](https://doi.org/10.5281/zenodo.21757462).
+
+```bibtex
+@article{Zhou2026Deployment,
+  author  = {Chenchen Zhou and Jose Matias},
+  title   = {Deployment-Aware Controller and Control Architecture Co-Design
+             via Mixed-Integer Output-Feedback SLS},
+  journal = {IEEE Control Systems Letters},
+  volume  = {10},
+  pages   = {2431--2436},
+  year    = {2026},
+  doi     = {10.1109/LCSYS.2026.3731917}
+}
 ```
-
-Compute the native RFD path and merge it into the recomputed result:
-
-```powershell
-.venv\Scripts\python.exe -m repro.rfd_joint_experiment `
-  --output results/lcss_v2/reproduced_joint/rfd_native_scan.json
-
-.venv\Scripts\python.exe -m repro.merge_native_rfd `
-  --publication results/lcss_v2/reproduced_joint/publication.json `
-  --rfd results/lcss_v2/reproduced_joint/rfd_native_scan.json
-```
-
-Then run `repro.joint_plotting` on the recomputed `publication.json`.
-
-Recompute the fixed-hardware and delay-three sensitivity cases with the same
-standard formulation:
-
-```powershell
-.venv\Scripts\python.exe -m repro.case_sensitivity `
-  --output results/lcss_v2/reproduced_sensitivity/case_sensitivity.json
-```
-
-The complete catalog is computationally substantial. The archived result and
-source-data files allow the reported points and figure to be checked without
-rerunning every mixed-integer and fixed-architecture problem.
-
-## License
-
-The code is released under the MIT License. The archived numerical data and
-figures may be reused with citation to the associated release and article.
